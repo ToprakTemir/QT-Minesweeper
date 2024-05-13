@@ -10,6 +10,9 @@
 #include <QObject>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <Qdir>
+#include <QString>
+#include <QPixmap>
 
 #include "Labels.h"
 
@@ -51,9 +54,12 @@ int main(int argc, char *argv[]) {
     auto* window = new QWidget();
     window->setWindowTitle("MineSweeper");
 
-    auto* layout = new QGridLayout();
+    auto* mainLayout = new QVBoxLayout();
 
 
+    // BUTTONS ON THE TOP
+
+    auto* buttonsLayout = new QHBoxLayout();
 
     // TIMER
 
@@ -62,11 +68,11 @@ int main(int argc, char *argv[]) {
     timer->start(1000);
     setup_timer(timer);
 
-    layout->addWidget(timerLabel);
+    buttonsLayout->addWidget(timerLabel);
 
     // add a restart button which resets the time
     QPushButton* restartButton = new QPushButton("Restart");
-    layout->addWidget(restartButton);
+    buttonsLayout->addWidget(restartButton);
     QObject::connect(restartButton, &QPushButton::clicked, [=](){
         timerValue = 0;
         timerLabel->setText(QString::number(timerValue));
@@ -74,28 +80,45 @@ int main(int argc, char *argv[]) {
 
 
     // TODO: add a label to show the number of mines left
-
+    // numOfMinesLeftShown = initialNumOfMines - numOfFlagsPlaced
 
 
     // quit button
     QPushButton* quitButton = new QPushButton("Quit");
-    layout->addWidget(quitButton);
+    buttonsLayout->addWidget(quitButton);
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
+
 
     // TODO: create the main board of NxM buttons looking as empty.png
 
+    auto* minesLayout = new QGridLayout();
+
     vector<vector<QPushButton*>> unrevealedButtons(BOARD_N, vector<QPushButton*>(BOARD_M));
 
-    QPixmap* unrevealed_square = new QPixmap("empty.png");
+    QString currentDir = QDir::currentPath();
+    QString imageAbsolutePath = currentDir + "/../assets/empty.png";
+    QPixmap* unrevealed_square_img = new QPixmap(imageAbsolutePath);
+    if (unrevealed_square_img->isNull()) {
+        cout << "Image not found" << endl;
+        return 1;
+    }
 
-    layout->setSpacing(0);
+    int mineWidth = 20;
+    int mineHeight = 20;
+
+    minesLayout->setContentsMargins(mineWidth, mineHeight, mineWidth, mineHeight);
+    minesLayout->setSpacing(mineWidth);
+
     for (int i=1; i < BOARD_N; i++) {
         for (int j=1; j < BOARD_M; j++) {
             QPushButton* unrevealedButton = new QPushButton();
             unrevealedButtons[i][j] = unrevealedButton;
-            unrevealedButton->setIcon(QIcon(*unrevealed_square));
-            unrevealedButton->setIconSize(QSize(40, 80)); // TODO: bu sayılar hiçbir işe yaramıyo amk
-            layout->addWidget(unrevealedButton, i, j);
+
+            unrevealedButton->setIcon(QIcon(*unrevealed_square_img));
+            unrevealedButton->setIconSize(QSize(mineWidth, mineHeight));
+            unrevealedButton->setFixedSize(mineWidth, mineHeight);
+
+            minesLayout->addWidget(unrevealedButton, i, j);
         }
     }
 
@@ -125,7 +148,11 @@ int main(int argc, char *argv[]) {
             i--; // try again for the same mine
     }
 
-    window->setLayout(layout);
+    mainLayout->addLayout(buttonsLayout);
+    mainLayout->addLayout(minesLayout);
+
+    window->setLayout(mainLayout);
+    window->setFixedSize(BOARD_N * 30, BOARD_M * 30 + 50);
     window->show();
     return QApplication::exec();
 }
