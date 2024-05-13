@@ -15,26 +15,20 @@
 #include <QPixmap>
 
 #include "Labels.h"
-#include "Cell.h"
 #include "MineGrid.h"
 
 using namespace std;
 
 // MINESWEEPER PROJECT
 
-static int timerValue = 0;
-static QLabel* timerLabel;
-
-void setup_timer(QTimer* timer) {
-    QObject::connect(timer, &QTimer::timeout, timerLabel, [=]() {
-        timerLabel->setText(QString::number(timerValue++));
-    });
-}
-
 static int BOARD_N = 20;
 static int BOARD_M = 20;
 static int INITIAL_NUM_MINES = 50;
 static int numOfRevealedCells = 0;
+
+bool isMine(int x, int y, unordered_set<int>& mine_locations) {
+    return mine_locations.find(x * BOARD_N + y) != mine_locations.end();
+}
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
@@ -55,32 +49,48 @@ int main(int argc, char *argv[]) {
 
     auto* mainLayout = new QVBoxLayout();
 
+
     // BUTTONS ON THE TOP
 
     auto* buttonsLayout = new QHBoxLayout();
 
     // TIMER
 
-    auto* timer = new QTimer();
-    timerLabel = new QLabel("0");
+    static int timerValue = 0;
+    QTimer* timer = new QTimer();
+    QLabel* timerLabel = new QLabel("0");
     timer->start(1000);
-    setup_timer(timer);
+
+    // connect the timer tick (every 1 second) with timerLabel and increment timerValue
+    QObject::connect(timer, &QTimer::timeout, timerLabel, [=]() {
+        timerLabel->setText(QString::number(timerValue++));
+    });
 
     buttonsLayout->addWidget(timerLabel);
 
-    // add a restart button which resets the time (for now), TODO: make it reset the board
+
+    // RESET BUTTON TODO: make it reset the board
     QPushButton* restartButton = new QPushButton("Restart");
     buttonsLayout->addWidget(restartButton);
+
     QObject::connect(restartButton, &QPushButton::clicked, [=](){
+        // reset timer
         timerValue = 0;
         timerLabel->setText(QString::number(timerValue));
+
+        // reset board //TODO
     });
+
 
     // SCORE BUTTON  (score = numOfRevealedCells)
 
+    static int score = 0;
+    QLabel* scoreLabel = new QLabel("0");
+    buttonsLayout->addWidget(scoreLabel);
+
 
     // QUIT BUTTON
-    auto* quitButton = new QPushButton("Quit");
+    QPushButton* quitButton = new QPushButton("Quit");
     buttonsLayout->addWidget(quitButton);
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
@@ -102,5 +112,4 @@ int main(int argc, char *argv[]) {
     window->setFixedSize(windowWidth, windowHeight);
     window->show();
     return QApplication::exec();
-
 }
