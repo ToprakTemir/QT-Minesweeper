@@ -38,21 +38,6 @@ bool isMine(int x, int y, unordered_set<int>& mine_locations) {
     return mine_locations.find(x * BOARD_N + y) != mine_locations.end();
 }
 
-int numOfAdjacentMines(int x, int y, unordered_set<int>& mine_locations) {
-    int result = 0;
-    for (int i = -1 ; i <= 1; i++) {
-        for (int j = -1; j <= 1; j++) {
-            if (i==0 && j==0)
-                continue;
-            if (isMine(x+i, y+j, mine_locations)) {
-                result++;
-            }
-        }
-    }
-    return result;
-}
-
-
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
         cout << "Usage: ./minesweeper [n] [m] [num_mines]" << endl;
@@ -132,10 +117,16 @@ int main(int argc, char *argv[]) {
 
             //connect on click to change icon
 
+            QObject::connect(unrevealedButton, &QPushButton::clicked, [=]() {
+                unrevealedButton->setIcon(QIcon(currentDir + "/../assets/0.png"));
+            });
+
+
+
             unrevealedButton->setFixedSize(mineSize, mineSize);
             unrevealedButton->setStyleSheet("QPushButton {"
-                                            "border-image: url(../assets/empty.png);"
-                                            "}");
+                                 "border-image: url(../assets/empty.png);"
+                                 "}");
 
             minesLayout->addWidget(unrevealedButton, i, j);
         }
@@ -157,7 +148,7 @@ int main(int argc, char *argv[]) {
     // random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distr(0, BOARD_M * BOARD_N - 1);
+    std::uniform_int_distribution<> distr(1, BOARD_M * BOARD_N);
 
     for (int i=0; i < num_mines; i++) {
         int random_number = distr(gen);
@@ -182,28 +173,5 @@ int main(int argc, char *argv[]) {
 
     window->setFixedSize(windowWidth, windowHeight);
     window->show();
-
-    // GAMEPLAY
-
-
-
-    for (int i=0; i < BOARD_N; i++) {
-        for (int j = 0; j < BOARD_M; j++) {
-
-            bool isCurrMine = isMine(i, j, mine_locations);
-            int numOfCurrAdjacentMines = numOfAdjacentMines(i, j, mine_locations);
-
-            QPushButton* unrevealedButton = unrevealedButtons[i][j];
-
-            QObject::connect(unrevealedButton, &QPushButton::clicked, [=]() {
-                unrevealedButton->setStyleSheet("QPushButton {"
-                                                "border-image: url(../assets/0.png);"
-                                                "}");
-            });
-
-
-        }
-    }
-
     return QApplication::exec();
 }
