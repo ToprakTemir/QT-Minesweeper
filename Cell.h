@@ -2,7 +2,7 @@
 #ifndef QT_MINESWEEPER_CELL_H
 #define QT_MINESWEEPER_CELL_H
 
-class Cell {
+class Cell : public QPushButton {
 public:
     Cell();
     ~Cell();

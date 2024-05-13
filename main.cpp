@@ -15,6 +15,8 @@
 #include <QPixmap>
 
 #include "Labels.h"
+#include "Cell.h"
+#include "MineGrid.h"
 
 using namespace std;
 
@@ -33,10 +35,6 @@ static int BOARD_N = 20;
 static int BOARD_M = 20;
 static int INITIAL_NUM_MINES = 50;
 static int numOfRevealedCells = 0;
-
-bool isMine(int x, int y, unordered_set<int>& mine_locations) {
-    return mine_locations.find(x * BOARD_N + y) != mine_locations.end();
-}
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
@@ -57,14 +55,13 @@ int main(int argc, char *argv[]) {
 
     auto* mainLayout = new QVBoxLayout();
 
-
     // BUTTONS ON THE TOP
 
     auto* buttonsLayout = new QHBoxLayout();
 
     // TIMER
 
-    QTimer* timer = new QTimer();
+    auto* timer = new QTimer();
     timerLabel = new QLabel("0");
     timer->start(1000);
     setup_timer(timer);
@@ -79,99 +76,31 @@ int main(int argc, char *argv[]) {
         timerLabel->setText(QString::number(timerValue));
     });
 
-
     // SCORE BUTTON  (score = numOfRevealedCells)
 
 
-
     // QUIT BUTTON
-    QPushButton* quitButton = new QPushButton("Quit");
+    auto* quitButton = new QPushButton("Quit");
     buttonsLayout->addWidget(quitButton);
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
 
     // main mine layout of NxM buttons
 
-    auto* minesLayout = new QGridLayout();
-
-    vector<vector<QPushButton*>> unrevealedButtons(BOARD_N, vector<QPushButton*>(BOARD_M));
-
-    QString currentDir = QDir::currentPath();
-    QString imageAbsolutePath = currentDir + "/../assets/empty.png";
-    QPixmap* unrevealed_square_img = new QPixmap(imageAbsolutePath);
-    if (unrevealed_square_img->isNull()) {
-        cout << "Image not found" << endl;
-        return 1;
-    }
-
-    int mineSize = 30;
-
-    minesLayout->setContentsMargins(0, 0, 0, 0);
-    minesLayout->setSpacing(0);
-
-    for (int i=0; i < BOARD_N; i++) {
-        for (int j=0; j < BOARD_M; j++) {
-
-            QPushButton* unrevealedButton = new QPushButton();
-            unrevealedButtons[i][j] = unrevealedButton;
-
-            //connect on click to change icon
-
-            QObject::connect(unrevealedButton, &QPushButton::clicked, [=]() {
-                unrevealedButton->setIcon(QIcon(currentDir + "/../assets/0.png"));
-            });
-
-
-
-            unrevealedButton->setFixedSize(mineSize, mineSize);
-            unrevealedButton->setStyleSheet("QPushButton {"
-                                 "border-image: url(../assets/empty.png);"
-                                 "}");
-
-            minesLayout->addWidget(unrevealedButton, i, j);
-        }
-    }
-
-
-    // randomly place the mines
-    static int num_mines = INITIAL_NUM_MINES;
-
-    if (num_mines > BOARD_N * BOARD_M) {
-        cout << "Number of mines is greater than the board size" << endl;
-        return 1;
-    }
-
-
-    // for any mine: (X, Y) = (mine_location / BOARD_N, mine_location % BOARD_N)
-    unordered_set<int> mine_locations;
-
-    // random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distr(1, BOARD_M * BOARD_N);
-
-    for (int i=0; i < num_mines; i++) {
-        int random_number = distr(gen);
-
-        if (mine_locations.find(random_number) == mine_locations.end())
-            mine_locations.insert(random_number);
-        else
-            i--; // try again for the same mine
-    }
-
-
+    auto* mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
 
     // final layout stuff
 
     mainLayout->addLayout(buttonsLayout);
-    mainLayout->addLayout(minesLayout);
+    mainLayout->addLayout(mineGrid);
 
     window->setLayout(mainLayout);
 
-    int windowWidth = BOARD_N * mineSize;
-    int windowHeight = BOARD_M * mineSize + 50;
+    int windowWidth = BOARD_N * mineGrid->mine_size;
+    int windowHeight = BOARD_M * mineGrid->mine_size + 50;
 
     window->setFixedSize(windowWidth, windowHeight);
     window->show();
     return QApplication::exec();
+
 }
