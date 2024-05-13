@@ -103,20 +103,22 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int mineWidth = 20;
-    int mineHeight = 20;
+    int mineSize = 50;
 
-    minesLayout->setContentsMargins(mineWidth, mineHeight, mineWidth, mineHeight);
-    minesLayout->setSpacing(mineWidth);
+    minesLayout->setContentsMargins(0, 0, 0, 0);
+    minesLayout->setSpacing(0);
 
-    for (int i=1; i < BOARD_N; i++) {
-        for (int j=1; j < BOARD_M; j++) {
+    for (int i=0; i < BOARD_N; i++) {
+        for (int j=0; j < BOARD_M; j++) {
             QPushButton* unrevealedButton = new QPushButton();
             unrevealedButtons[i][j] = unrevealedButton;
 
-            unrevealedButton->setIcon(QIcon(*unrevealed_square_img));
-            unrevealedButton->setIconSize(QSize(mineWidth, mineHeight));
-            unrevealedButton->setFixedSize(mineWidth, mineHeight);
+//            unrevealedButton->setIcon(QIcon(*unrevealed_square_img));
+//            unrevealedButton->setIconSize(QSize(mineSize, mineSize));
+            unrevealedButton->setFixedSize(mineSize, mineSize);
+            unrevealedButton->setStyleSheet("QPushButton {"
+                                 "border-image: url(../assets/empty.png);"
+                                 "}");
 
             minesLayout->addWidget(unrevealedButton, i, j);
         }
@@ -130,6 +132,7 @@ int main(int argc, char *argv[]) {
         cout << "Number of mines is greater than the board size" << endl;
         return 1;
     }
+
 
     // for any mine: (X, Y) = (mine_location / BOARD_N, mine_location % BOARD_N)
     unordered_set<int> mine_locations;
@@ -148,11 +151,19 @@ int main(int argc, char *argv[]) {
             i--; // try again for the same mine
     }
 
+
+
+    // final layout stuff
+
     mainLayout->addLayout(buttonsLayout);
     mainLayout->addLayout(minesLayout);
 
     window->setLayout(mainLayout);
-    window->setFixedSize(BOARD_N * 30, BOARD_M * 30 + 50);
+
+    int windowWidth = BOARD_N * mineSize;
+    int windowHeight = BOARD_M * mineSize + 50;
+
+    window->setFixedSize(windowWidth, windowHeight);
     window->show();
     return QApplication::exec();
 }
