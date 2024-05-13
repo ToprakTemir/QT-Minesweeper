@@ -20,15 +20,6 @@ using namespace std;
 
 // MINESWEEPER PROJECT
 
-static int timerValue = 0;
-static QLabel* timerLabel;
-
-void setup_timer(QTimer* timer) {
-    QObject::connect(timer, &QTimer::timeout, timerLabel, [=]() {
-        timerLabel->setText(QString::number(timerValue++));
-    });
-}
-
 static int BOARD_N = 20;
 static int BOARD_M = 20;
 static int INITIAL_NUM_MINES = 50;
@@ -64,24 +55,37 @@ int main(int argc, char *argv[]) {
 
     // TIMER
 
+    static int timerValue = 0;
     QTimer* timer = new QTimer();
-    timerLabel = new QLabel("0");
+    QLabel* timerLabel = new QLabel("0");
     timer->start(1000);
-    setup_timer(timer);
+
+    // connect the timer tick (every 1 second) with timerLabel and increment timerValue
+    QObject::connect(timer, &QTimer::timeout, timerLabel, [=]() {
+        timerLabel->setText(QString::number(timerValue++));
+    });
 
     buttonsLayout->addWidget(timerLabel);
 
-    // add a restart button which resets the time (for now), TODO: make it reset the board
+
+    // RESET BUTTON TODO: make it reset the board
     QPushButton* restartButton = new QPushButton("Restart");
     buttonsLayout->addWidget(restartButton);
+
     QObject::connect(restartButton, &QPushButton::clicked, [=](){
+        // reset timer
         timerValue = 0;
         timerLabel->setText(QString::number(timerValue));
+
+        // reset board //TODO
     });
 
 
     // SCORE BUTTON  (score = numOfRevealedCells)
 
+    static int score = 0;
+    QLabel* scoreLabel = new QLabel("0");
+    buttonsLayout->addWidget(scoreLabel);
 
 
     // QUIT BUTTON
@@ -115,20 +119,16 @@ int main(int argc, char *argv[]) {
             QPushButton* unrevealedButton = new QPushButton();
             unrevealedButtons[i][j] = unrevealedButton;
 
-            //connect on click to change icon
-
-            QObject::connect(unrevealedButton, &QPushButton::clicked, [=]() {
-                unrevealedButton->setIcon(QIcon(currentDir + "/../assets/0.png"));
-            });
-
-
-
             unrevealedButton->setFixedSize(mineSize, mineSize);
             unrevealedButton->setStyleSheet("QPushButton {"
                                  "border-image: url(../assets/empty.png);"
                                  "}");
 
             minesLayout->addWidget(unrevealedButton, i, j);
+
+//            QObject::connect(unrevealedButton, &QPushButton::clicked, scoreLabel, [=](){
+//                scoreLabel->setText(QString::number(++score));
+//            });
         }
     }
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
     // random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distr(1, BOARD_M * BOARD_N);
+    std::uniform_int_distribution<> distr(0, BOARD_M * BOARD_N-1);
 
     for (int i=0; i < num_mines; i++) {
         int random_number = distr(gen);

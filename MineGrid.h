@@ -21,34 +21,22 @@ using namespace std;
 
 class MineGrid : public QGridLayout {
 public:
+    const int n;
+    const int m;
+    const int initial_num_mines;
+    int num_of_revealed_cells;
+    vector<vector<QPushButton*>> cells;
+
     MineGrid();
     ~MineGrid();
 
 
-private:
-    const int mineSize;
-    int n;
-    int m;
-    const int num_mines;
-    int num_of_revealed_cells;
-    vector<vector<QPushButton*>> unrevealedButtons;
-    unordered_set<int> mine_locations;
 
 
 
 
-    bool isMine(int, int, unordered_set<int>&);
-    int numOfAdjacentMines(int,int,unordered_set<int>&);
-
-
-
-
-
-
-
-
-
-
+    bool isMine(int, int);
+    int numOfAdjacentMines(int, int);
 
 };
 
