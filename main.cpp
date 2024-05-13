@@ -31,7 +31,7 @@ void setup_timer(QTimer* timer) {
 
 static int BOARD_N = 10;
 static int BOARD_M = 10;
-static int INITIAL_NUM_MINES = 10;
+static int INITIAL_NUM_MINES = 0;
 
 bool isMine(int x, int y, unordered_set<int>& mine_locations) {
     return mine_locations.find(x * BOARD_N + y) != mine_locations.end();
@@ -50,7 +50,9 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
-    // create the main window
+    // CREATING THE MAIN WINDOWS
+    //
+
     auto* window = new QWidget();
     window->setWindowTitle("MineSweeper");
 
@@ -109,10 +111,13 @@ int main(int argc, char *argv[]) {
     minesLayout->setContentsMargins(mineWidth, mineHeight, mineWidth, mineHeight);
     minesLayout->setSpacing(mineWidth);
 
+    //button generation
     for (int i=1; i < BOARD_N; i++) {
         for (int j=1; j < BOARD_M; j++) {
             QPushButton* unrevealedButton = new QPushButton();
             unrevealedButtons[i][j] = unrevealedButton;
+
+
 
             unrevealedButton->setIcon(QIcon(*unrevealed_square_img));
             unrevealedButton->setIconSize(QSize(mineWidth, mineHeight));
@@ -154,5 +159,28 @@ int main(int argc, char *argv[]) {
     window->setLayout(mainLayout);
     window->setFixedSize(BOARD_N * 30, BOARD_M * 30 + 50);
     window->show();
+
+    // GAMEPLAY
+
+    //change image on click
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return QApplication::exec();
 }
