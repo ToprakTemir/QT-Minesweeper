@@ -29,13 +29,29 @@ void setup_timer(QTimer* timer) {
     });
 }
 
-static int BOARD_N = 10;
-static int BOARD_M = 10;
-static int INITIAL_NUM_MINES = 10;
+static int BOARD_N = 20;
+static int BOARD_M = 20;
+static int INITIAL_NUM_MINES = 50;
+static int numOfRevealedCells = 0;
 
 bool isMine(int x, int y, unordered_set<int>& mine_locations) {
     return mine_locations.find(x * BOARD_N + y) != mine_locations.end();
 }
+
+int numOfAdjacentMines(int x, int y, unordered_set<int>& mine_locations) {
+    int result = 0;
+    for (int i = -1 ; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            if (i==0 && j==0)
+                continue;
+            if (isMine(x+i, y+j, mine_locations)) {
+                result++;
+            }
+        }
+    }
+    return result;
+}
+
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
@@ -50,9 +66,7 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
-    // CREATING THE MAIN WINDOWS
-    //
-
+    // create the main window
     auto* window = new QWidget();
     window->setWindowTitle("MineSweeper");
 
@@ -72,7 +86,7 @@ int main(int argc, char *argv[]) {
 
     buttonsLayout->addWidget(timerLabel);
 
-    // add a restart button which resets the time
+    // add a restart button which resets the time (for now), TODO: make it reset the board
     QPushButton* restartButton = new QPushButton("Restart");
     buttonsLayout->addWidget(restartButton);
     QObject::connect(restartButton, &QPushButton::clicked, [=](){
@@ -81,17 +95,17 @@ int main(int argc, char *argv[]) {
     });
 
 
-    // TODO: add a label to show the number of mines left
-    // numOfMinesLeftShown = initialNumOfMines - numOfFlagsPlaced
+    // SCORE BUTTON  (score = numOfRevealedCells)
 
 
-    // quit button
+
+    // QUIT BUTTON
     QPushButton* quitButton = new QPushButton("Quit");
     buttonsLayout->addWidget(quitButton);
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
 
-    // TODO: create the main board of NxM buttons looking as empty.png
+    // main mine layout of NxM buttons
 
     auto* minesLayout = new QGridLayout();
 
@@ -105,22 +119,23 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int mineSize = 50;
+    int mineSize = 30;
 
     minesLayout->setContentsMargins(0, 0, 0, 0);
     minesLayout->setSpacing(0);
 
     for (int i=0; i < BOARD_N; i++) {
         for (int j=0; j < BOARD_M; j++) {
+
             QPushButton* unrevealedButton = new QPushButton();
             unrevealedButtons[i][j] = unrevealedButton;
 
-//            unrevealedButton->setIcon(QIcon(*unrevealed_square_img));
-//            unrevealedButton->setIconSize(QSize(mineSize, mineSize));
+            //connect on click to change icon
+
             unrevealedButton->setFixedSize(mineSize, mineSize);
             unrevealedButton->setStyleSheet("QPushButton {"
-                                 "border-image: url(../assets/empty.png);"
-                                 "}");
+                                            "border-image: url(../assets/empty.png);"
+                                            "}");
 
             minesLayout->addWidget(unrevealedButton, i, j);
         }
@@ -142,7 +157,7 @@ int main(int argc, char *argv[]) {
     // random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distr(1, BOARD_M * BOARD_N);
+    std::uniform_int_distribution<> distr(0, BOARD_M * BOARD_N - 1);
 
     for (int i=0; i < num_mines; i++) {
         int random_number = distr(gen);
@@ -167,5 +182,28 @@ int main(int argc, char *argv[]) {
 
     window->setFixedSize(windowWidth, windowHeight);
     window->show();
+
+    // GAMEPLAY
+
+
+
+    for (int i=0; i < BOARD_N; i++) {
+        for (int j = 0; j < BOARD_M; j++) {
+
+            bool isCurrMine = isMine(i, j, mine_locations);
+            int numOfCurrAdjacentMines = numOfAdjacentMines(i, j, mine_locations);
+
+            QPushButton* unrevealedButton = unrevealedButtons[i][j];
+
+            QObject::connect(unrevealedButton, &QPushButton::clicked, [=]() {
+                unrevealedButton->setStyleSheet("QPushButton {"
+                                                "border-image: url(../assets/0.png);"
+                                                "}");
+            });
+
+
+        }
+    }
+
     return QApplication::exec();
 }
