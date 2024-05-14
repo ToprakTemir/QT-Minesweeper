@@ -48,10 +48,12 @@ void Cell::toggleFlag() {
 
 void Cell::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton) { // right click
+        if (MineGrid::game_over) return;
         if (!isRevealed)
             toggleFlag();
     }
     else { // left click
+        if (MineGrid::game_over) return;
         if (isFlagged) return;
         if (isRevealed) return;
         reveal();

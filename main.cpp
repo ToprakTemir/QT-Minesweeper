@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QString>
+#include <QMainWindow>
 
 #include "MineGrid.h"
 
@@ -19,6 +20,8 @@ using namespace std;
 static int BOARD_N = 20;
 static int BOARD_M = 20;
 static int INITIAL_NUM_MINES = 50;
+
+int MineGrid::game_over = 1;
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
@@ -67,12 +70,25 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(restartButton, &QPushButton::clicked, [=]() mutable{
         // reset timer
+        timer->start();
         timerValue = 0;
         timerLabel->setText(QString::number(timerValue));
 
         // reset board
         delete mineGrid;
         mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
+
+        //game lost
+        QObject::connect(mineGrid, &MineGrid::gameLost, [=]() mutable{
+            // pop up
+            auto *popUp = new QLabel("   You lost.");
+            popUp->setGeometry(750, 500, 100, 50);
+            popUp->show();
+            // stop time
+            timer->stop();
+        });
+
+
         mainLayout->addLayout(mineGrid);
 
     });
@@ -91,11 +107,15 @@ int main(int argc, char *argv[]) {
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
 
-    // main mine layout of NxM buttons
-
-
-
-    // final layout stuff
+    //game lost
+    QObject::connect(mineGrid, &MineGrid::gameLost, [=]() mutable{
+        // pop up
+        auto *popUp = new QLabel("   You lost.");
+        popUp->setGeometry(750, 500, 100, 50);
+        popUp->show();
+        // stop time
+        timer->stop();
+    });
 
     mainLayout->addLayout(buttonsLayout);
     mainLayout->addLayout(mineGrid);

@@ -29,6 +29,7 @@ public:
     MineGrid(int, int, int); // n, m, num_mines
     ~MineGrid() override;
 
+    static int game_over;
     int n;
     int m;
     int initial_num_mines;
@@ -41,6 +42,9 @@ public:
     int numOfAdjacentMines(int,int);
     void revealAdjacentEmptyCells(int, int);
     void mineClicked(Cell*);
+
+signals:
+    void gameLost();
 };
 
 
