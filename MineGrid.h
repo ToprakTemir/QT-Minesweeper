@@ -24,7 +24,7 @@ using namespace std;
 class MineGrid : public QGridLayout {
 public:
     MineGrid(int, int, int); // n, m, num_mines
-    ~MineGrid();
+    ~MineGrid() override;
 
     int mine_size;
     int n;

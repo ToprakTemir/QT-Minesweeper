@@ -21,8 +21,8 @@ using namespace std;
 
 // MINESWEEPER PROJECT
 
-static int BOARD_N = 20;
-static int BOARD_M = 20;
+static int BOARD_N = 10;
+static int BOARD_M = 10;
 static int INITIAL_NUM_MINES = 50;
 static int numOfRevealedCells = 0;
 

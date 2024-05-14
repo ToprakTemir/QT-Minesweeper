@@ -6,8 +6,8 @@
 
 class Cell : public QPushButton {
 public:
-    const int cellSize;
-    const bool isMine;
+    int cellSize;
+    bool isMine;
     bool isRevealed;
     bool isFlagged;
     int numOfAdjacentMines;

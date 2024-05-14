@@ -69,8 +69,6 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     }
 }
 
-MineGrid::~MineGrid() {}
-
 bool MineGrid::isMine(int x, int y) {
     return mine_locations.find(x * n + y) != mine_locations.end();
 }
@@ -87,6 +85,8 @@ int MineGrid::numOfAdjacentMines(int x, int y) {
     return result;
 }
 
-
+MineGrid::~MineGrid() {
+    QGridLayout::~QGridLayout();
+}
 
 
