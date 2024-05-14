@@ -6,7 +6,7 @@
 
 class Cell : public QPushButton {
 public:
-    int cellSize;
+    const static int cellSize = 30;
     bool isMine;
     bool isRevealed;
     bool isFlagged;
@@ -17,6 +17,9 @@ public:
 
     void reveal();
     void toggleFlag();
+
+signals:
+    void mineClicked(Cell* cell);
 
 public slots:
     void onCellClicked();

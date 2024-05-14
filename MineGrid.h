@@ -26,17 +26,18 @@ public:
     MineGrid(int, int, int); // n, m, num_mines
     ~MineGrid() override;
 
-    int mine_size;
     int n;
     int m;
-    int num_mines;
+    int initial_num_mines;
     int num_of_revealed_cells;
-    vector<vector<QPushButton*>> unrevealedButtons;
+
+    vector<vector<Cell*>> cells;
     unordered_set<int> mine_locations;
 
     bool isMine(int, int);
     int numOfAdjacentMines(int,int);
-
+    void revealAdjacentEmptyCells(int, int);
+    void mineClicked(Cell*);
 };
 
 
