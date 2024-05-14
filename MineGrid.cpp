@@ -155,17 +155,14 @@ void MineGrid::giveHint() {
 // lose game
 void MineGrid::mineClicked(Cell* cell) {
     revealAllMines();
-
     //all cells unclickable
     game_over = 1;
-
     //stop timer in main.cpp
     emit gameLost();
 }
 
 
 void MineGrid::checkWinCondition() {
-    cout << num_of_revealed_cells << endl;
     if (num_of_revealed_cells + 1 == n * m - initial_num_mines) {
         revealAllMines();
         game_over = 1;
