@@ -9,12 +9,14 @@
 //TODO: used QPushButton instead of Cell to run the main.cpp. Change all to Cell
 
 MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
-    this->n = board_n;
-    this->m = board_m;
+    n = board_n;
+    m = board_m;
     this->initial_num_mines = initial_num_mines;
-    this->num_of_revealed_cells = 0;
+    num_of_revealed_cells = 0;
+    hintCell_x = -1;
+    hintCell_y = -1;
 
-    this->cells = vector<vector<Cell*>>(n, vector<Cell*>(m));
+    cells = vector<vector<Cell*>>(n, vector<Cell*>(m));
 
     this->setContentsMargins(0, 0, 0, 0);
     this->setSpacing(0);
@@ -52,6 +54,7 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
 
             QObject::connect(newCell, &Cell::mineClicked, this, &MineGrid::mineClicked);
             QObject::connect(newCell, &Cell::revealAdjacentEmptyCells, this, &MineGrid::revealAdjacentEmptyCells);
+            QObject::connect(newCell, &Cell::revealedCellClicked, this, &MineGrid::revealCellsIfAllNearbyCellsFlagged);
 
             this->addWidget(newCell, i, j);
         }
@@ -96,9 +99,59 @@ void MineGrid::revealAdjacentEmptyCells(int x, int y) {
         }
 }
 
+
 // TODO
 void MineGrid::mineClicked(Cell* cell) {
 
+}
+
+int MineGrid::numOfNearbyFlags(int x, int y) {
+    int result = 0;
+    for (int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++) {
+            if (x+i<0 || x+i == n || y+j<0 || y+j == m)
+                continue;
+            if (cells[x+i][y+j]->isFlagged)
+                result++;
+        }
+    return result;
+}
+
+int MineGrid::numOfNearbyUnrevealedCells(int x, int y) {
+    int result = 0;
+    for (int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++) {
+            if (x+i<0 || x+i == n || y+j<0 || y+j == m)
+                continue;
+            if (!cells[x+i][y+j]->isRevealed)
+                result++;
+        }
+    return result;
+}
+
+void MineGrid::revealCellsIfAllNearbyCellsFlagged(int x, int y) {
+    if (numOfNearbyFlags(x, y) == cells[x][y]->numOfAdjacentMines) {
+        for (int i = -1; i <= 1; i++)
+            for (int j = -1; j <= 1; j++) {
+                if (x+i<0 || x+i == n || y+j<0 || y+j == m)
+                    continue;
+                cells[x+i][y+j]->reveal();
+            }
+    }
+}
+
+// hint feature is not perfect, and only able to show simple hints
+void MineGrid::giveHint() {
+    if (hintCell_x != -1 && hintCell_y != -1 && !cells[hintCell_x][hintCell_y]->isRevealed) {
+        cells[hintCell_x][hintCell_y]->reveal();
+        return;
+    }
+
+    for (int x=0; x<n; x++) {
+        for (int y=0; y<m; y++) {
+
+        }
+    }
 }
 
 

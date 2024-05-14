@@ -1,5 +1,6 @@
 
 #include <QMouseEvent>
+
 #include "MineGrid.h"
 #include "Cell.h"
 using namespace std;
@@ -19,6 +20,7 @@ Cell::~Cell() = default;
 
 void Cell::reveal() {
     if (isRevealed) return;
+    if (isFlagged) return;
     isRevealed = true;
 
     if (isMine) {
@@ -26,6 +28,7 @@ void Cell::reveal() {
         emit mineClicked(this);
     }
     else {
+        emit cellRevealed();
         if (numOfAdjacentMines == 0)
             emit revealAdjacentEmptyCells(this->x, this->y);
 
@@ -53,8 +56,11 @@ void Cell::mousePressEvent(QMouseEvent* event) {
     }
     else { // left click
         if (isFlagged) return;
-        if (isRevealed) return;
-        reveal();
+        if (isRevealed) {
+            emit revealedCellClicked(this->x, this->y);
+        }
+        else
+            reveal();
     }
     QPushButton::mousePressEvent(event);
 }

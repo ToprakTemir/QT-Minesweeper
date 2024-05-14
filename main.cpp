@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QString>
 
+#include "Cell.h"
 #include "MineGrid.h"
 
 using namespace std;
@@ -19,6 +20,7 @@ using namespace std;
 static int BOARD_N = 20;
 static int BOARD_M = 20;
 static int INITIAL_NUM_MINES = 50;
+
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
@@ -80,19 +82,26 @@ int main(int argc, char *argv[]) {
 
     // SCORE BUTTON  (score = numOfRevealedCells)
 
-    static int score = 0;
     auto* scoreLabel = new QLabel("0");
+    for (int i = 0; i < BOARD_N; i++) {
+        for (int j = 0; j < BOARD_M; j++) {
+            QObject::connect(mineGrid->cells[i][j], &Cell::cellRevealed, scoreLabel, [=]() {
+                scoreLabel->setText(QString::number(++mineGrid->num_of_revealed_cells));
+            });
+        }
+    }
     buttonsLayout->addWidget(scoreLabel);
-
 
     // QUIT BUTTON
     auto* quitButton = new QPushButton("Quit");
     buttonsLayout->addWidget(quitButton);
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
+    // HINT BUTTON
 
-    // main mine layout of NxM buttons
-
+    auto* hintButton = new QPushButton("Hint");
+    QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
+    buttonsLayout->addWidget(hintButton);
 
 
     // final layout stuff
@@ -109,3 +118,5 @@ int main(int argc, char *argv[]) {
     window->show();
     return QApplication::exec();
 }
+
+
