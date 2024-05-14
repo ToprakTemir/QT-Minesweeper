@@ -40,6 +40,26 @@ void connectCellsWithScoreAndRemainingMinesLabels(MineGrid* mineGrid, QLabel* sc
     }
 }
 
+void gameEndSignals_setup(MineGrid* mineGrid, QTimer* timer) {
+    //game lost
+    QObject::connect(mineGrid, &MineGrid::gameLost, [=]() mutable{
+        // pop up
+        auto *popUp = new QLabel("   You lost.");
+        popUp->setGeometry(750, 500, 100, 50);
+        popUp->show();
+        // stop time
+        timer->stop();
+    });
+
+    // game won
+    QObject::connect(mineGrid, &MineGrid::gameWon, [=]() mutable {
+        auto *popUp = new QLabel("   You won.");
+        popUp->setGeometry(750, 500, 100, 50);
+        popUp->show();
+        timer->stop();
+    });
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
         cout << "Usage: ./minesweeper [n] [m] [num_mines]" << endl;
@@ -112,59 +132,24 @@ int main(int argc, char *argv[]) {
 
         connectCellsWithScoreAndRemainingMinesLabels(mineGrid, scoreLabel, remainingMinesLabel);
 
-        //game lost
-        QObject::connect(mineGrid, &MineGrid::gameLost, [=]() mutable{
-            // pop up
-            auto *popUp = new QLabel("   You lost.");
-            popUp->setGeometry(750, 500, 100, 50);
-            popUp->show();
-            // stop time
-            timer->stop();
-        });
-
-        // game won
-        QObject::connect(mineGrid, &MineGrid::gameWon, [=]() mutable {
-            // pop up
-            auto *popUp = new QLabel("   You won.");
-            popUp->setGeometry(750, 500, 100, 50);
-            popUp->show();
-            // stop time
-            timer->stop();
-        });
+        gameEndSignals_setup(mineGrid, timer);
 
         mainLayout->addLayout(mineGrid);
 
     });
+
+    // HINT BUTTON
+    auto* hintButton = new QPushButton("Hint");
+    QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
+    buttonsLayout->addWidget(hintButton);
 
     // QUIT BUTTON
     auto* quitButton = new QPushButton("Quit");
     buttonsLayout->addWidget(quitButton);
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
-    // HINT BUTTON
 
-    auto* hintButton = new QPushButton("Hint");
-    QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
-    buttonsLayout->addWidget(hintButton);
-
-    // game lost
-    QObject::connect(mineGrid, &MineGrid::gameLost, [=]() mutable{
-        // pop up
-        auto *popUp = new QLabel("   You lost.");
-        popUp->setGeometry(750, 500, 100, 50);
-        popUp->show();
-        // stop time
-        timer->stop();
-    });
-
-    //game won
-    QObject::connect(mineGrid, &MineGrid::gameWon, [=]() mutable {
-        auto *popUp = new QLabel("   You won.");
-        popUp->setGeometry(750, 500, 100, 50);
-        popUp->show();
-        // stop time
-        timer->stop();
-    });
+    gameEndSignals_setup(mineGrid, timer);
 
     // final layout stuff
 
