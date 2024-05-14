@@ -9,13 +9,15 @@ class Cell : public QPushButton {
 Q_OBJECT
 
 public:
+    int x; // the
+    int y;
     const static int cellSize = 30;
     bool isMine;
     bool isRevealed;
     bool isFlagged;
     int numOfAdjacentMines;
 
-    Cell();
+    Cell(int, int);
     ~Cell();
 
     void reveal();
@@ -23,10 +25,10 @@ public:
 
 signals:
     void mineClicked(Cell* cell);
+    void revealAdjacentEmptyCells(int x, int y);
 
 public slots:
-    void onCellClicked();
-    void onCellRightClicked();
+    void mousePressEvent(QMouseEvent* event) override;
 };
 
 #endif //QT_MINESWEEPER_CELL_H

@@ -19,14 +19,23 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     this->setContentsMargins(0, 0, 0, 0);
     this->setSpacing(0);
 
+
+    // Setup Cells
     for (int i=0; i < n; i++) {
         for (int j=0; j < m; j++) {
 
-            Cell* newCell = new Cell();
+            Cell* newCell = new Cell(i, j);
             cells[i][j] = newCell;
 
             newCell->setFixedSize(Cell::cellSize, Cell::cellSize);
             newCell->setStyleSheet("QPushButton {border-image: url(../assets/empty.png);}");
+
+            if (isMine(i,j))
+                newCell->isMine = true;
+            newCell->numOfAdjacentMines = numOfAdjacentMines(i,j);
+
+            QObject::connect(newCell, &Cell::mineClicked, this, &MineGrid::mineClicked);
+            QObject::connect(newCell, &Cell::revealAdjacentEmptyCells, this, &MineGrid::revealAdjacentEmptyCells);
 
             this->addWidget(newCell, i, j);
         }
@@ -48,18 +57,6 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
         else
             i--; // try again for the same mine
     }
-
-    //fill in isMine and numOfAdjacentMines for Cell objects
-    for (int i=0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            Cell* currCell = cells[i][j];
-            if (isMine(i,j)) {
-                currCell->isMine = true;
-            }
-            currCell->numOfAdjacentMines = numOfAdjacentMines(i,j);
-        }
-    }
-
 
 
 
