@@ -48,6 +48,21 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
         else
             i--; // try again for the same mine
     }
+
+    //fill in isMine and numOfAdjacentMines for Cell objects
+    for (int i=0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            Cell* currCell = cells[i][j];
+            if (isMine(i,j)) {
+                currCell->isMine = true;
+            }
+            currCell->numOfAdjacentMines = numOfAdjacentMines(i,j);
+        }
+    }
+
+
+
+
 }
 
 MineGrid::~MineGrid() {

@@ -5,6 +5,9 @@
 #include <QPushButton>
 
 class Cell : public QPushButton {
+
+Q_OBJECT
+
 public:
     const static int cellSize = 30;
     bool isMine;

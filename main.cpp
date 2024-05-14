@@ -16,9 +16,9 @@ using namespace std;
 
 // MINESWEEPER PROJECT
 
-static int BOARD_N = 10;
-static int BOARD_M = 10;
-static int INITIAL_NUM_MINES = 50;
+static int BOARD_N = 20;
+static int BOARD_M = 20;
+static int INITIAL_NUM_MINES = 10;
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
@@ -37,8 +37,10 @@ int main(int argc, char *argv[]) {
     auto* window = new QWidget();
     window->setWindowTitle("MineSweeper");
 
-    auto* mainLayout = new QVBoxLayout();
+    // create mine grid
+    auto* mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
 
+    auto* mainLayout = new QVBoxLayout();
 
     // BUTTONS ON THE TOP
 
@@ -63,12 +65,16 @@ int main(int argc, char *argv[]) {
     auto* restartButton = new QPushButton("Restart");
     buttonsLayout->addWidget(restartButton);
 
-    QObject::connect(restartButton, &QPushButton::clicked, [=](){
+    QObject::connect(restartButton, &QPushButton::clicked, [=]() mutable{
         // reset timer
         timerValue = 0;
         timerLabel->setText(QString::number(timerValue));
 
         // reset board //TODO
+        delete mineGrid;
+        mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
+        mainLayout->addLayout(mineGrid);
+
     });
 
 
@@ -87,7 +93,7 @@ int main(int argc, char *argv[]) {
 
     // main mine layout of NxM buttons
 
-    auto* mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
+
 
     // final layout stuff
 

@@ -19,7 +19,8 @@ add_executable(QT_Minesweeper main.cpp
         Labels.cpp
         MineGrid.h
         Cell.h
-        MineGrid.cpp)
+        MineGrid.cpp
+        Cell.cpp)
 target_link_libraries(QT_Minesweeper
         Qt::Core
         Qt::Gui
