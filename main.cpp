@@ -18,7 +18,7 @@ using namespace std;
 
 static int BOARD_N = 20;
 static int BOARD_M = 20;
-static int INITIAL_NUM_MINES = 10;
+static int INITIAL_NUM_MINES = 50;
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {

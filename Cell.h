@@ -9,8 +9,9 @@ class Cell : public QPushButton {
 Q_OBJECT
 
 public:
-    int x; // the
-    int y;
+    int x;
+    int y; // grid[x][y] is used as the i and j indexes
+
     const static int cellSize = 30;
     bool isMine;
     bool isRevealed;

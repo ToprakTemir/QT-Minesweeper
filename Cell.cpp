@@ -13,9 +13,6 @@ Cell::Cell(int x, int y) {
     numOfAdjacentMines = -1;
     setFixedSize(cellSize, cellSize);
     setStyleSheet("QPushButton {border-image: url(../assets/empty.png);}");
-
-    connect(this, SIGNAL(clicked()), this, SLOT(onCellClicked()));
-    connect(this, SIGNAL(rightClicked()), this, SLOT(onCellRightClicked()));
 }
 
 Cell::~Cell() {
@@ -62,6 +59,7 @@ void Cell::mousePressEvent(QMouseEvent* event) {
         if (isRevealed) return;
         reveal();
     }
+    QPushButton::mousePressEvent(event);
 }
 
 
