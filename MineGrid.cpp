@@ -2,17 +2,6 @@
 #include <random>
 #include <unordered_set>
 #include <vector>
-#include <utility>
-
-#include <QApplication>
-#include <QPushButton>
-#include <QLabel>
-#include <QObject>
-#include <QTimer>
-#include <QVBoxLayout>
-#include <Qdir>
-#include <QString>
-#include <QPixmap>
 
 #include "Cell.h"
 #include "MineGrid.h"
@@ -20,17 +9,12 @@
 //TODO: used QPushButton instead of Cell to run the main.cpp. Change all to Cell
 
 MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
-    n = board_n;
-    m = board_m;
-    num_mines = initial_num_mines;
-    num_of_revealed_cells = 0;
-    mine_size = 30;
+    this->n = board_n;
+    this->m = board_m;
+    this->initial_num_mines = initial_num_mines;
+    this->num_of_revealed_cells = 0;
 
-    vector<vector<QPushButton*>> unrevealedButtons(n, vector<QPushButton*>(m));
-
-    QString currentDir = QDir::currentPath();
-    QString imageAbsolutePath = currentDir + "/../assets/empty.png";
-    QPixmap* unrevealed_square_img = new QPixmap(imageAbsolutePath);
+    this->cells = vector<vector<Cell*>>(n, vector<Cell*>(m));
 
     this->setContentsMargins(0, 0, 0, 0);
     this->setSpacing(0);
@@ -38,28 +22,25 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     for (int i=0; i < n; i++) {
         for (int j=0; j < m; j++) {
 
-            QPushButton* unrevealedButton = new QPushButton();
-            unrevealedButtons[i][j] = unrevealedButton;
+            Cell* newCell = new Cell();
+            cells[i][j] = newCell;
 
-            unrevealedButton->setFixedSize(mine_size, mine_size);
-            unrevealedButton->setStyleSheet("QPushButton {"
-                                            "border-image: url(../assets/empty.png);"
-                                            "}");
+            newCell->setFixedSize(Cell::cellSize, Cell::cellSize);
+            newCell->setStyleSheet("QPushButton {border-image: url(../assets/empty.png);}");
 
-            this->addWidget(unrevealedButton, i, j);
+            this->addWidget(newCell, i, j);
         }
     }
 
-    if (num_mines > n * m) {
+    if (initial_num_mines > n * m)
         cout << "Number of mines is greater than the board size" << endl;
-    }
 
-    // random number generator
+    // random number generator for placing mines
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(0, m * n - 1);
 
-    for (int i=0; i < num_mines; i++) {
+    for (int i=0; i < initial_num_mines; i++) {
         int random_number = distr(gen);
 
         if (mine_locations.find(random_number) == mine_locations.end())
@@ -69,7 +50,13 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     }
 }
 
-MineGrid::~MineGrid() {}
+MineGrid::~MineGrid() {
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<m; j++) {
+            delete cells[i][j];
+        }
+    }
+}
 
 bool MineGrid::isMine(int x, int y) {
     return mine_locations.find(x * n + y) != mine_locations.end();
@@ -85,6 +72,16 @@ int MineGrid::numOfAdjacentMines(int x, int y) {
                 result++;
         }
     return result;
+}
+
+// TODO
+void MineGrid::revealAdjacentEmptyCells(int x, int y) {
+
+}
+
+// TODO
+void MineGrid::mineClicked(Cell* cell) {
+
 }
 
 

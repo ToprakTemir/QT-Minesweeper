@@ -1,8 +1,6 @@
 #include <iostream>
 #include <random>
 #include <unordered_set>
-#include <vector>
-#include <utility>
 
 #include <QApplication>
 #include <QPushButton>
@@ -10,11 +8,8 @@
 #include <QObject>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <Qdir>
 #include <QString>
-#include <QPixmap>
 
-#include "Labels.h"
 #include "MineGrid.h"
 
 using namespace std;
@@ -24,11 +19,6 @@ using namespace std;
 static int BOARD_N = 20;
 static int BOARD_M = 20;
 static int INITIAL_NUM_MINES = 50;
-static int numOfRevealedCells = 0;
-
-bool isMine(int x, int y, unordered_set<int>& mine_locations) {
-    return mine_locations.find(x * BOARD_N + y) != mine_locations.end();
-}
 
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
@@ -57,8 +47,8 @@ int main(int argc, char *argv[]) {
     // TIMER
 
     static int timerValue = 0;
-    QTimer* timer = new QTimer();
-    QLabel* timerLabel = new QLabel("0");
+    auto* timer = new QTimer();
+    auto* timerLabel = new QLabel("0");
     timer->start(1000);
 
     // connect the timer tick (every 1 second) with timerLabel and increment timerValue
@@ -70,7 +60,7 @@ int main(int argc, char *argv[]) {
 
 
     // RESET BUTTON TODO: make it reset the board
-    QPushButton* restartButton = new QPushButton("Restart");
+    auto* restartButton = new QPushButton("Restart");
     buttonsLayout->addWidget(restartButton);
 
     QObject::connect(restartButton, &QPushButton::clicked, [=](){
@@ -85,12 +75,12 @@ int main(int argc, char *argv[]) {
     // SCORE BUTTON  (score = numOfRevealedCells)
 
     static int score = 0;
-    QLabel* scoreLabel = new QLabel("0");
+    auto* scoreLabel = new QLabel("0");
     buttonsLayout->addWidget(scoreLabel);
 
 
     // QUIT BUTTON
-    QPushButton* quitButton = new QPushButton("Quit");
+    auto* quitButton = new QPushButton("Quit");
     buttonsLayout->addWidget(quitButton);
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
@@ -106,8 +96,8 @@ int main(int argc, char *argv[]) {
 
     window->setLayout(mainLayout);
 
-    int windowWidth = BOARD_N * mineGrid->mine_size;
-    int windowHeight = BOARD_M * mineGrid->mine_size + 50;
+    int windowWidth = BOARD_N * Cell::cellSize;
+    int windowHeight = BOARD_M * Cell::cellSize + 50;
 
     window->setFixedSize(windowWidth, windowHeight);
     window->show();

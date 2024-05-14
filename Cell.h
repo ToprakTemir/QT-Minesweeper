@@ -6,8 +6,8 @@
 
 class Cell : public QPushButton {
 public:
-    const int cellSize;
-    const bool isMine;
+    const static int cellSize = 30;
+    bool isMine;
     bool isRevealed;
     bool isFlagged;
     int numOfAdjacentMines;
@@ -17,6 +17,9 @@ public:
 
     void reveal();
     void toggleFlag();
+
+signals:
+    void mineClicked(Cell* cell);
 
 public slots:
     void onCellClicked();
