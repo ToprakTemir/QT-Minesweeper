@@ -29,6 +29,8 @@ signals:
     void mineClicked(Cell* cell);
     void revealAdjacentEmptyCells(int x, int y);
     void revealedCellClicked(int x, int y);
+    void cell_flagged();
+    void cell_unflagged();
 
 public slots:
     void mousePressEvent(QMouseEvent* event) override;

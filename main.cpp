@@ -24,6 +24,22 @@ static int INITIAL_NUM_MINES = 50;
 
 int MineGrid::game_over = 1;
 
+void connectCellsWithScoreAndRemainingMinesLabels(MineGrid* mineGrid, QLabel* scoreLabel, QLabel* remainingMinesLabel) {
+    for (int i = 0; i < BOARD_N; i++) {
+        for (int j = 0; j < BOARD_M; j++) {
+            QObject::connect(mineGrid->cells[i][j], &Cell::cellRevealed, scoreLabel, [=]() {
+                scoreLabel->setText("Score: " + QString::number(++mineGrid->num_of_revealed_cells));
+            });
+            QObject::connect(mineGrid->cells[i][j], &Cell::cell_flagged, remainingMinesLabel, [=]() {
+                remainingMinesLabel->setText("Remaining Mines: " + QString::number(INITIAL_NUM_MINES - (++mineGrid->num_of_flagged_cells)));
+            });
+            QObject::connect(mineGrid->cells[i][j], &Cell::cell_unflagged, remainingMinesLabel, [=]() {
+                remainingMinesLabel->setText("Remaining Mines: " + QString::number(INITIAL_NUM_MINES - (--mineGrid->num_of_flagged_cells)));
+            });
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
         cout << "Usage: ./minesweeper [n] [m] [num_mines]" << endl;
@@ -54,16 +70,27 @@ int main(int argc, char *argv[]) {
 
     static int timerValue = 0;
     auto* timer = new QTimer();
-    auto* timerLabel = new QLabel("0");
+    auto* timerLabel = new QLabel("Time: " + QString::number(timerValue));
     timer->start(1000);
 
     // connect the timer tick (every 1 second) with timerLabel and increment timerValue
     QObject::connect(timer, &QTimer::timeout, timerLabel, [=]() {
-        timerLabel->setText(QString::number(timerValue++));
+        timerLabel->setText("Time: " + QString::number(timerValue++));
     });
 
     buttonsLayout->addWidget(timerLabel);
 
+    // SCORE BUTTON  (score = numOfRevealedCells)
+
+    auto* scoreLabel = new QLabel("0");
+    buttonsLayout->addWidget(scoreLabel);
+
+    // REMAINING MINES LABEL
+
+    auto *remainingMinesLabel = new QLabel("Remaining Mines: " + QString::number(INITIAL_NUM_MINES));
+    buttonsLayout->addWidget(remainingMinesLabel);
+
+    connectCellsWithScoreAndRemainingMinesLabels(mineGrid, scoreLabel, remainingMinesLabel);
 
     // RESET BUTTON
     auto* restartButton = new QPushButton("Restart");
@@ -73,11 +100,17 @@ int main(int argc, char *argv[]) {
         // reset timer
         timer->start(1000);
         timerValue = 0;
-        timerLabel->setText(QString::number(timerValue));
+        timerLabel->setText("Time: " + QString::number(timerValue));
+
+        // reset score
+        mineGrid->num_of_revealed_cells = 0;
+        scoreLabel->setText("Score: " + QString::number(mineGrid->num_of_revealed_cells));
 
         // reset board
         delete mineGrid;
         mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
+
+        connectCellsWithScoreAndRemainingMinesLabels(mineGrid, scoreLabel, remainingMinesLabel);
 
         //game lost
         QObject::connect(mineGrid, &MineGrid::gameLost, [=]() mutable{
@@ -93,19 +126,6 @@ int main(int argc, char *argv[]) {
         mainLayout->addLayout(mineGrid);
 
     });
-
-
-    // SCORE BUTTON  (score = numOfRevealedCells)
-
-    auto* scoreLabel = new QLabel("0");
-    for (int i = 0; i < BOARD_N; i++) {
-        for (int j = 0; j < BOARD_M; j++) {
-            QObject::connect(mineGrid->cells[i][j], &Cell::cellRevealed, scoreLabel, [=]() {
-                scoreLabel->setText(QString::number(++mineGrid->num_of_revealed_cells));
-            });
-        }
-    }
-    buttonsLayout->addWidget(scoreLabel);
 
     // QUIT BUTTON
     auto* quitButton = new QPushButton("Quit");

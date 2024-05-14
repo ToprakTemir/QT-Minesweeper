@@ -34,6 +34,7 @@ public:
     int m;
     int initial_num_mines;
     int num_of_revealed_cells;
+    int num_of_flagged_cells;
 
     int hintCell_x; // x coordinate of the hinted cell
     int hintCell_y; // y coordinate of the hinted cell

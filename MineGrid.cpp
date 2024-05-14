@@ -16,6 +16,7 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     this->m = board_m;
     this->initial_num_mines = initial_num_mines;
     num_of_revealed_cells = 0;
+    num_of_flagged_cells = 0;
     hintCell_x = -1;
     hintCell_y = -1;
 
