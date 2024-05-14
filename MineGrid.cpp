@@ -19,7 +19,6 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     this->setContentsMargins(0, 0, 0, 0);
     this->setSpacing(0);
 
-
     if (initial_num_mines > n * m)
         cout << "Number of mines is greater than the board size" << endl;
 
@@ -58,9 +57,6 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
         }
     }
 
-
-
-
 }
 
 MineGrid::~MineGrid() {
@@ -89,7 +85,6 @@ int MineGrid::numOfAdjacentMines(int x, int y) {
     return result;
 }
 
-// TODO
 void MineGrid::revealAdjacentEmptyCells(int x, int y) {
     for (int i = -1; i <= 1; i++)
         for (int j = -1; j <= 1; j++) {

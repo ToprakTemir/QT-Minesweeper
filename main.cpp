@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     buttonsLayout->addWidget(timerLabel);
 
 
-    // RESET BUTTON TODO: make it reset the board
+    // RESET BUTTON
     auto* restartButton = new QPushButton("Restart");
     buttonsLayout->addWidget(restartButton);
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
         timerValue = 0;
         timerLabel->setText(QString::number(timerValue));
 
-        // reset board //TODO
+        // reset board
         delete mineGrid;
         mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
         mainLayout->addLayout(mineGrid);

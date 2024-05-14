@@ -15,7 +15,7 @@ Cell::Cell(int x, int y) {
     setStyleSheet("QPushButton {border-image: url(../assets/empty.png);}");
 }
 
-Cell::~Cell() {}
+Cell::~Cell() = default;
 
 void Cell::reveal() {
     if (isRevealed) return;
