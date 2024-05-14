@@ -20,7 +20,7 @@ using namespace std;
 
 static int BOARD_N = 20;
 static int BOARD_M = 20;
-static int INITIAL_NUM_MINES = 1;
+static int INITIAL_NUM_MINES = 50;
 
 int MineGrid::game_over = 1;
 
