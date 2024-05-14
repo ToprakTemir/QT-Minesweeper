@@ -1,12 +1,15 @@
 
+#include <QMouseEvent>
 #include "MineGrid.h"
 #include "Cell.h"
 using namespace std;
 
-Cell::Cell() {
+Cell::Cell(int x, int y) {
     isMine = false;
     isRevealed = false;
     isFlagged = false;
+    x = -1;
+    y = -1;
     numOfAdjacentMines = -1;
     setFixedSize(cellSize, cellSize);
     setStyleSheet("QPushButton {border-image: url(../assets/empty.png);}");
@@ -29,6 +32,9 @@ void Cell::reveal() {
         emit mineClicked(this);
     }
     else {
+        if (numOfAdjacentMines == 0)
+            emit revealAdjacentEmptyCells(this->x, this->y);
+
         string imgPath = "../assets/" + to_string(numOfAdjacentMines) + ".png";
         setStyleSheet(("QPushButton {border-image: url(" + imgPath + ");}").c_str());
     }
@@ -46,15 +52,16 @@ void Cell::toggleFlag() {
     }
 }
 
-void Cell::onCellClicked() {
-    if (isFlagged) return;
-    if (isRevealed) return;
-    reveal();
-}
-
-void Cell::onCellRightClicked() {
-    if (!isRevealed)
-        toggleFlag();
+void Cell::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::RightButton) { // right click
+        if (!isRevealed)
+            toggleFlag();
+    }
+    else { // left click
+        if (isFlagged) return;
+        if (isRevealed) return;
+        reveal();
+    }
 }
 
 
