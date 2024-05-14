@@ -11,6 +11,9 @@
 MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     n = board_n;
     m = board_m;
+    game_over = 0;
+    this->n = board_n;
+    this->m = board_m;
     this->initial_num_mines = initial_num_mines;
     num_of_revealed_cells = 0;
     hintCell_x = -1;
@@ -100,9 +103,21 @@ void MineGrid::revealAdjacentEmptyCells(int x, int y) {
 }
 
 
-// TODO
+
+// lose game
 void MineGrid::mineClicked(Cell* cell) {
 
+    //reveal all mines
+    for (int i=0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            if (cells[i][j]->isMine)
+                cells[i][j]->setStyleSheet("QPushButton {border-image: url(../assets/mine.png);}");
+
+    //all cells unclickable
+    game_over = 1;
+
+    //stop timer in main.cpp
+    emit gameLost();
 }
 
 int MineGrid::numOfNearbyFlags(int x, int y) {
