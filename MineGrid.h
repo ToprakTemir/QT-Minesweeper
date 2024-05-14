@@ -16,6 +16,7 @@
 #include <Qdir>
 #include <QString>
 #include <QPixmap>
+#include <set>
 
 #include "Cell.h"
 
@@ -45,10 +46,11 @@ public:
     bool isMine(int, int);
     int numOfAdjacentMines(int,int);
     void revealAdjacentEmptyCells(int, int);
-    void mineClicked(Cell*);
+    void mineClicked();
     int numOfNearbyFlags(int, int);
     int numOfNearbyUnrevealedCells(int, int);
     void revealCellsIfAllNearbyCellsFlagged(int, int);
+    int numOfNearbyObviousMines(int, int, set<pair<int, int>>&) const;
     void giveHint();
     void checkWinCondition();
     void revealAllMines();
