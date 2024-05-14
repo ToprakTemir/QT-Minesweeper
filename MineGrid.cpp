@@ -2,6 +2,7 @@
 #include <random>
 #include <unordered_set>
 #include <vector>
+#include <utility>
 
 #include "Cell.h"
 #include "MineGrid.h"
@@ -137,6 +138,21 @@ void MineGrid::revealCellsIfAllNearbyCellsFlagged(int x, int y) {
             }
     }
 }
+
+int MineGrid::numOfNearbyObviousMines(int x, int y, set<pair<int, int>>& obviousMines) const {
+    int result = 0;
+    for (int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++) {
+            if (x+i<0 || x+i == n || y+j<0 || y+j == m || (i == 0 && j == 0))
+                continue;
+
+            pair<int, int> p = make_pair(x+i, y+j);
+            if (obviousMines.contains(p))
+                result++;
+        }
+    return result;
+}
+
 // hint feature is not perfect, and only able to show simple hints
 void MineGrid::giveHint() {
     if (hintCell_x != -1 && hintCell_y != -1 && !cells[hintCell_x][hintCell_y]->isRevealed) {
@@ -144,18 +160,39 @@ void MineGrid::giveHint() {
         return;
     }
 
+    auto* obviousMines = new set<pair<int, int>>();
+
     for (int x=0; x<n; x++) {
         for (int y=0; y<m; y++) {
             if (cells[x][y]->isRevealed && (numOfNearbyUnrevealedCells(x, y) == cells[x][y]->numOfAdjacentMines)) {
-                for(int i=-1; i<1; i++) {
-                    for(int j=-1; j<1; j++) {
+                for(int i=-1; i<=1; i++) {
+                    for(int j=-1; j<=1; j++) {
                         if (!cells[i][j]->isRevealed) {
                             if (x+i < 0 || x+i == n || y+j < 0 || y+j == m || (i == 0 && j == 0))
                                 continue;
 
+                            obviousMines->emplace(x+i, y+j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (obviousMines->empty()) return;
+
+    for (int x=0; x<n; x++) {
+        for (int y=0; y<m; y++) {
+            if (numOfNearbyObviousMines(x, y, *obviousMines) == cells[x][y]->numOfAdjacentMines && cells[x][y]->numOfAdjacentMines > 0 && cells[x][y]->isRevealed) {
+                for (int i=-1; i<=1; i++) {
+                    for (int j=-1; j<=1; j++) {
+                        if (x+i < 0 || x+i == n || y+j < 0 || y+j == m || (i == 0 && j == 0))
+                            continue;
+
+                        if (!obviousMines->contains(make_pair(x+i, y+j))) {
+                            cells[x+i][y+j]->setStyleSheet("QPushButton {border-image: url(../assets/hint.png);}");
                             hintCell_x = x+i;
                             hintCell_y = y+j;
-                            cells[x+i][y+j]->setStyleSheet("QPushButton {border-image: url(../assets/hint.png);}");
                             return;
                         }
                     }
@@ -167,7 +204,7 @@ void MineGrid::giveHint() {
 
 
 // lose game
-void MineGrid::mineClicked(Cell* cell) {
+void MineGrid::mineClicked() {
     revealAllMines();
 
     //all cells unclickable
