@@ -8,17 +8,14 @@ Cell::Cell(int x, int y) {
     isMine = false;
     isRevealed = false;
     isFlagged = false;
-    x = -1;
-    y = -1;
+    this->x = x;
+    this->y = y;
     numOfAdjacentMines = -1;
     setFixedSize(cellSize, cellSize);
     setStyleSheet("QPushButton {border-image: url(../assets/empty.png);}");
 }
 
-Cell::~Cell() {
-    disconnect(this, SIGNAL(clicked()), this, SLOT(onCellClicked()));
-    disconnect(this, SIGNAL(rightClicked()), this, SLOT(onCellRightClicked()));
-}
+Cell::~Cell() = default;
 
 void Cell::reveal() {
     if (isRevealed) return;
