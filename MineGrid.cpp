@@ -58,7 +58,7 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
             QObject::connect(newCell, &Cell::mineClicked, this, &MineGrid::mineClicked);
             QObject::connect(newCell, &Cell::revealAdjacentEmptyCells, this, &MineGrid::revealAdjacentEmptyCells);
             QObject::connect(newCell, &Cell::revealedCellClicked, this, &MineGrid::revealCellsIfAllNearbyCellsFlagged);
-
+            QObject::connect(newCell, &Cell::cellRevealed, this, &MineGrid::checkWinCondition);
             this->addWidget(newCell, i, j);
         }
     }
@@ -102,24 +102,6 @@ void MineGrid::revealAdjacentEmptyCells(int x, int y) {
         }
 }
 
-
-
-// lose game
-void MineGrid::mineClicked(Cell* cell) {
-
-    //reveal all mines
-    for (int i=0; i < n; i++)
-        for (int j = 0; j < m; j++)
-            if (cells[i][j]->isMine)
-                cells[i][j]->setStyleSheet("QPushButton {border-image: url(../assets/mine.png);}");
-
-    //all cells unclickable
-    game_over = 1;
-
-    //stop timer in main.cpp
-    emit gameLost();
-}
-
 int MineGrid::numOfNearbyFlags(int x, int y) {
     int result = 0;
     for (int i = -1; i <= 1; i++)
@@ -154,7 +136,6 @@ void MineGrid::revealCellsIfAllNearbyCellsFlagged(int x, int y) {
             }
     }
 }
-
 // hint feature is not perfect, and only able to show simple hints
 void MineGrid::giveHint() {
     if (hintCell_x != -1 && hintCell_y != -1 && !cells[hintCell_x][hintCell_y]->isRevealed) {
@@ -170,5 +151,32 @@ void MineGrid::giveHint() {
 }
 
 
+// lose game
+void MineGrid::mineClicked(Cell* cell) {
+    revealAllMines();
+
+    //all cells unclickable
+    game_over = 1;
+
+    //stop timer in main.cpp
+    emit gameLost();
+}
+
+
+void MineGrid::checkWinCondition() {
+    cout << num_of_revealed_cells << endl;
+    if (num_of_revealed_cells + 1 == n * m - initial_num_mines) {
+        revealAllMines();
+        game_over = 1;
+        emit gameWon();
+    }
+}
+
+void MineGrid::revealAllMines() {
+    for (int i=0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            if (cells[i][j]->isMine)
+                cells[i][j]->setStyleSheet("QPushButton {border-image: url(../assets/mine.png);}");
+}
 
 

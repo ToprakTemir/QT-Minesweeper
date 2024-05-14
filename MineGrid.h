@@ -49,9 +49,12 @@ public:
     int numOfNearbyUnrevealedCells(int, int);
     void revealCellsIfAllNearbyCellsFlagged(int, int);
     void giveHint();
+    void checkWinCondition();
+    void revealAllMines();
 
 signals:
     void gameLost();
+    void gameWon();
 };
 
 

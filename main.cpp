@@ -20,7 +20,7 @@ using namespace std;
 
 static int BOARD_N = 20;
 static int BOARD_M = 20;
-static int INITIAL_NUM_MINES = 50;
+static int INITIAL_NUM_MINES = 1;
 
 int MineGrid::game_over = 1;
 
@@ -89,14 +89,21 @@ int main(int argc, char *argv[]) {
             timer->stop();
         });
 
+        // game won
+        QObject::connect(mineGrid, &MineGrid::gameWon, [=]() mutable {
+            // pop up
+            auto *popUp = new QLabel("   You won.");
+            popUp->setGeometry(750, 500, 100, 50);
+            popUp->show();
+            // stop time
+            timer->stop();
+        });
 
         mainLayout->addLayout(mineGrid);
 
     });
 
-
     // SCORE BUTTON  (score = numOfRevealedCells)
-
     auto* scoreLabel = new QLabel("0");
     for (int i = 0; i < BOARD_N; i++) {
         for (int j = 0; j < BOARD_M; j++) {
@@ -113,7 +120,6 @@ int main(int argc, char *argv[]) {
     QObject::connect(quitButton, &QPushButton::clicked, &QApplication::quit);
 
     // HINT BUTTON
-
     auto* hintButton = new QPushButton("Hint");
     QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
     buttonsLayout->addWidget(hintButton);
@@ -122,6 +128,15 @@ int main(int argc, char *argv[]) {
     QObject::connect(mineGrid, &MineGrid::gameLost, [=]() mutable{
         // pop up
         auto *popUp = new QLabel("   You lost.");
+        popUp->setGeometry(750, 500, 100, 50);
+        popUp->show();
+        // stop time
+        timer->stop();
+    });
+
+    // game won
+    QObject::connect(mineGrid, &MineGrid::gameWon, [=]() mutable {
+        auto *popUp = new QLabel("   You won.");
         popUp->setGeometry(750, 500, 100, 50);
         popUp->show();
         // stop time
