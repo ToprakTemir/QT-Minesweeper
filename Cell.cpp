@@ -41,10 +41,12 @@ void Cell::toggleFlag() {
     if (isRevealed) return;
     if (isFlagged) {
         isFlagged = false;
+        emit cell_unflagged();
         setStyleSheet("QPushButton {border-image: url(../assets/empty.png);}");
     }
     else {
         isFlagged = true;
+        emit cell_flagged();
         setStyleSheet("QPushButton {border-image: url(../assets/flag.png);}");
     }
 }
