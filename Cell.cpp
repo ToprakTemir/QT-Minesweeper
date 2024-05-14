@@ -29,9 +29,6 @@ void Cell::reveal() {
         emit mineClicked(this);
     }
     else {
-//        TODO: if (numOfAdjacentMines == 0)
-            // emit signal to board to reveal all adjacent cells
-
         string imgPath = "../assets/" + to_string(numOfAdjacentMines) + ".png";
         setStyleSheet(("QPushButton {border-image: url(" + imgPath + ");}").c_str());
     }

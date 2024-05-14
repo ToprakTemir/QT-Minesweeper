@@ -53,16 +53,15 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
     for (int i=0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             Cell* currCell = cells[i][j];
-            if (isMine(i,j)) {
+            if (isMine(i,j))
                 currCell->isMine = true;
-            }
             currCell->numOfAdjacentMines = numOfAdjacentMines(i,j);
+
+            connect(currCell, )
+
+
         }
     }
-
-
-
-
 }
 
 MineGrid::~MineGrid() {
@@ -91,7 +90,13 @@ int MineGrid::numOfAdjacentMines(int x, int y) {
 
 // TODO
 void MineGrid::revealAdjacentEmptyCells(int x, int y) {
-
+    for (int i = -1 ; i <= 1; i++)
+        for (int j = -1; j <= 1; j++) {
+            if (cells[x+i][y+j]->isRevealed)
+                continue;
+            if (cells[x+i][y+j]->numOfAdjacentMines == 0)
+                cells[x+i][y+j]->reveal();
+        }
 }
 
 // TODO
