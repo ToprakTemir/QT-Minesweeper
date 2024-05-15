@@ -167,7 +167,9 @@ void MineGrid::giveHint() {
             if (cells[x][y]->isRevealed && (numOfNearbyUnrevealedCells(x, y) == cells[x][y]->numOfAdjacentMines)) {
                 for(int i=-1; i<=1; i++) {
                     for(int j=-1; j<=1; j++) {
-                        if (!cells[i][j]->isRevealed) {
+                        if (x+i<0 || x+i == n || y+j<0 || y+j == m || (i == 0 && j == 0))
+                            continue;
+                        if (!cells[x+i][y+j]->isRevealed) {
                             if (x+i < 0 || x+i == n || y+j < 0 || y+j == m || (i == 0 && j == 0))
                                 continue;
 
@@ -183,7 +185,8 @@ void MineGrid::giveHint() {
 
     for (int x=0; x<n; x++) {
         for (int y=0; y<m; y++) {
-            if (numOfNearbyObviousMines(x, y, *obviousMines) == cells[x][y]->numOfAdjacentMines && cells[x][y]->numOfAdjacentMines > 0 && cells[x][y]->isRevealed) {
+            if (cells[x][y]->numOfAdjacentMines == numOfNearbyObviousMines(x, y, *obviousMines) &&
+            cells[x][y]->numOfAdjacentMines > 0 && cells[x][y]->isRevealed) {
                 for (int i=-1; i<=1; i++) {
                     for (int j=-1; j<=1; j++) {
                         if (x+i < 0 || x+i == n || y+j < 0 || y+j == m || (i == 0 && j == 0))

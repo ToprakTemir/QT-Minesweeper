@@ -126,6 +126,10 @@ int main(int argc, char *argv[]) {
         mineGrid->num_of_revealed_cells = 0;
         scoreLabel->setText("Score: " + QString::number(mineGrid->num_of_revealed_cells));
 
+        // reset remaining mines
+        mineGrid->num_of_flagged_cells = 0;
+        remainingMinesLabel->setText("Remaining Mines: " + QString::number(INITIAL_NUM_MINES - mineGrid->num_of_flagged_cells));
+
         // reset board
         delete mineGrid;
         mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
