@@ -60,6 +60,11 @@ void gameEndSignals_setup(MineGrid* mineGrid, QTimer* timer) {
     });
 }
 
+void hintSignal_setup(QPushButton* hintButton, MineGrid* mineGrid, QHBoxLayout* buttonsLayout) {
+    QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
+    buttonsLayout->addWidget(hintButton);
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 1 && argc != 4) {
         cout << "Usage: ./minesweeper [n] [m] [num_mines]" << endl;
@@ -112,6 +117,11 @@ int main(int argc, char *argv[]) {
 
     connectCellsWithScoreAndRemainingMinesLabels(mineGrid, scoreLabel, remainingMinesLabel);
 
+    // HINT BUTTON
+    auto* hintButton = new QPushButton("Hint");
+    QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
+    buttonsLayout->addWidget(hintButton);
+
     // RESET BUTTON
     auto* restartButton = new QPushButton("Restart");
     buttonsLayout->addWidget(restartButton);
@@ -134,14 +144,13 @@ int main(int argc, char *argv[]) {
 
         gameEndSignals_setup(mineGrid, timer);
 
+        hintSignal_setup(hintButton, mineGrid, buttonsLayout);
+
         mainLayout->addLayout(mineGrid);
 
     });
 
-    // HINT BUTTON
-    auto* hintButton = new QPushButton("Hint");
-    QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
-    buttonsLayout->addWidget(hintButton);
+
 
     // QUIT BUTTON
     auto* quitButton = new QPushButton("Quit");
