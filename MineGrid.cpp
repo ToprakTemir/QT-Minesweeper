@@ -186,7 +186,6 @@ void MineGrid::giveHint() {
 
     for (int x=0; x<n; x++) {
         for (int y=0; y<m; y++) {
-            if (cells[x][y]->numOfAdjacentMines == numOfNearbyObviousMines(x, y, *obviousMines) && cells[x][y]->isRevealed) {
             if (cells[x][y]->numOfAdjacentMines == numOfNearbyObviousMines(x, y, *obviousMines) &&
             cells[x][y]->numOfAdjacentMines > 0 && cells[x][y]->isRevealed) {
                 for (int i=-1; i<=1; i++) {
