@@ -155,6 +155,10 @@ int MineGrid::numOfNearbyObviousMines(int x, int y, set<pair<int, int>>& obvious
 
 // hint feature is not perfect, and only able to show simple hints
 void MineGrid::giveHint() {
+
+    if (game_over)
+        return;
+
     if (hintCell_x != -1 && hintCell_y != -1 && !cells[hintCell_x][hintCell_y]->isRevealed) {
         cells[hintCell_x][hintCell_y]->reveal();
         return;
@@ -167,12 +171,9 @@ void MineGrid::giveHint() {
             if (cells[x][y]->isRevealed && (numOfNearbyUnrevealedCells(x, y) == cells[x][y]->numOfAdjacentMines)) {
                 for(int i=-1; i<=1; i++) {
                     for(int j=-1; j<=1; j++) {
-                        if (x+i<0 || x+i == n || y+j<0 || y+j == m || (i == 0 && j == 0))
+                        if (x+i < 0 || x+i == n || y+j < 0 || y+j == m || (i == 0 && j == 0))
                             continue;
                         if (!cells[x+i][y+j]->isRevealed) {
-                            if (x+i < 0 || x+i == n || y+j < 0 || y+j == m || (i == 0 && j == 0))
-                                continue;
-
                             obviousMines->emplace(x+i, y+j);
                         }
                     }
@@ -185,6 +186,7 @@ void MineGrid::giveHint() {
 
     for (int x=0; x<n; x++) {
         for (int y=0; y<m; y++) {
+            if (cells[x][y]->numOfAdjacentMines == numOfNearbyObviousMines(x, y, *obviousMines) && cells[x][y]->isRevealed) {
             if (cells[x][y]->numOfAdjacentMines == numOfNearbyObviousMines(x, y, *obviousMines) &&
             cells[x][y]->numOfAdjacentMines > 0 && cells[x][y]->isRevealed) {
                 for (int i=-1; i<=1; i++) {
@@ -192,7 +194,7 @@ void MineGrid::giveHint() {
                         if (x+i < 0 || x+i == n || y+j < 0 || y+j == m || (i == 0 && j == 0))
                             continue;
 
-                        if (!obviousMines->contains(make_pair(x+i, y+j))) {
+                        if (!obviousMines->contains(make_pair(x+i, y+j)) && !cells[x+i][y+j]->isRevealed) {
                             cells[x+i][y+j]->setStyleSheet("QPushButton {border-image: url(../assets/hint.png);}");
                             hintCell_x = x+i;
                             hintCell_y = y+j;
@@ -219,7 +221,6 @@ void MineGrid::mineClicked() {
 
 
 void MineGrid::checkWinCondition() {
-    cout << num_of_revealed_cells << endl;
     if (num_of_revealed_cells + 1 == n * m - initial_num_mines) {
         revealAllMines();
         game_over = 1;
