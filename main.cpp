@@ -18,8 +18,8 @@ using namespace std;
 
 // MINESWEEPER PROJECT
 
-static int BOARD_N = 20;
-static int BOARD_M = 20;
+static int BOARD_N = 10;
+static int BOARD_M = 10;
 static int INITIAL_NUM_MINES = 50;
 
 int MineGrid::game_over = 1;
@@ -60,9 +60,8 @@ void gameEndSignals_setup(MineGrid* mineGrid, QTimer* timer) {
     });
 }
 
-void hintSignal_setup(QPushButton* hintButton, MineGrid* mineGrid, QHBoxLayout* buttonsLayout) {
+void hintSignal_connect(QPushButton* hintButton, MineGrid* mineGrid, QHBoxLayout* buttonsLayout) {
     QObject::connect(hintButton, &QPushButton::clicked, mineGrid, &MineGrid::giveHint);
-    buttonsLayout->addWidget(hintButton);
 }
 
 int main(int argc, char *argv[]) {
@@ -107,7 +106,7 @@ int main(int argc, char *argv[]) {
 
     // SCORE BUTTON  (score = numOfRevealedCells)
 
-    auto* scoreLabel = new QLabel("0");
+    auto* scoreLabel = new QLabel("Score: 0");
     buttonsLayout->addWidget(scoreLabel);
 
     // REMAINING MINES LABEL
@@ -144,11 +143,11 @@ int main(int argc, char *argv[]) {
         delete mineGrid;
         mineGrid = new MineGrid(BOARD_N, BOARD_M, INITIAL_NUM_MINES);
 
+        hintSignal_connect(hintButton, mineGrid, buttonsLayout);
+
         connectCellsWithScoreAndRemainingMinesLabels(mineGrid, scoreLabel, remainingMinesLabel);
 
         gameEndSignals_setup(mineGrid, timer);
-
-        hintSignal_setup(hintButton, mineGrid, buttonsLayout);
 
         mainLayout->addLayout(mineGrid);
 
