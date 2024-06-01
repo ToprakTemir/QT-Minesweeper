@@ -23,7 +23,7 @@ MineGrid::MineGrid(int board_n, int board_m, int initial_num_mines) {
 
     cells = vector<vector<Cell*>>(n, vector<Cell*>(m));
 
-    this->setContentsMargins(0, 0, 0, 0);
+    this->setContentsMargins(10, 10, 10, 10);
     this->setSpacing(0);
 
     if (initial_num_mines > n * m)
@@ -76,7 +76,7 @@ MineGrid::~MineGrid() {
 }
 
 bool MineGrid::isMine(int x, int y) {
-    return mine_locations.find(x * n + y) != mine_locations.end();
+    return mine_locations.find(y * n + x) != mine_locations.end();
 }
 
 int MineGrid::numOfAdjacentMines(int x, int y) {

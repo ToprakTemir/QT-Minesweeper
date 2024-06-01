@@ -18,9 +18,9 @@ using namespace std;
 
 // MINESWEEPER PROJECT
 
-static int BOARD_N = 10;
-static int BOARD_M = 10;
-static int INITIAL_NUM_MINES = 50;
+static int BOARD_N = 30;    // HEIGHT
+static int BOARD_M = 15;    // WIDTH
+static int INITIAL_NUM_MINES = 10;
 
 int MineGrid::game_over = 1;
 
@@ -31,10 +31,10 @@ void connectCellsWithScoreAndRemainingMinesLabels(MineGrid* mineGrid, QLabel* sc
                 scoreLabel->setText("Score: " + QString::number(++mineGrid->num_of_revealed_cells));
             });
             QObject::connect(mineGrid->cells[i][j], &Cell::cell_flagged, remainingMinesLabel, [=]() {
-                remainingMinesLabel->setText("Remaining Mines: " + QString::number(INITIAL_NUM_MINES - (++mineGrid->num_of_flagged_cells)));
+                remainingMinesLabel->setText("Remaining: " + QString::number(INITIAL_NUM_MINES - (++mineGrid->num_of_flagged_cells)));
             });
             QObject::connect(mineGrid->cells[i][j], &Cell::cell_unflagged, remainingMinesLabel, [=]() {
-                remainingMinesLabel->setText("Remaining Mines: " + QString::number(INITIAL_NUM_MINES - (--mineGrid->num_of_flagged_cells)));
+                remainingMinesLabel->setText("Remaining: " + QString::number(INITIAL_NUM_MINES - (--mineGrid->num_of_flagged_cells)));
             });
         }
     }
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
 
     // REMAINING MINES LABEL
 
-    auto *remainingMinesLabel = new QLabel("Remaining Mines: " + QString::number(INITIAL_NUM_MINES));
+    auto *remainingMinesLabel = new QLabel("Remaining: " + QString::number(INITIAL_NUM_MINES));
     buttonsLayout->addWidget(remainingMinesLabel);
 
     connectCellsWithScoreAndRemainingMinesLabels(mineGrid, scoreLabel, remainingMinesLabel);
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
 
         // reset remaining mines
         mineGrid->num_of_flagged_cells = 0;
-        remainingMinesLabel->setText("Remaining Mines: " + QString::number(INITIAL_NUM_MINES - mineGrid->num_of_flagged_cells));
+        remainingMinesLabel->setText("Remaining: " + QString::number(INITIAL_NUM_MINES - mineGrid->num_of_flagged_cells));
 
         // reset board
         delete mineGrid;
@@ -168,12 +168,12 @@ int main(int argc, char *argv[]) {
     mainLayout->addLayout(buttonsLayout);
     mainLayout->addLayout(mineGrid);
 
-    window->setLayout(mainLayout);
-
-    int windowWidth = BOARD_N * Cell::cellSize;
-    int windowHeight = BOARD_M * Cell::cellSize + 50;
+    int windowWidth = (BOARD_M * Cell::cellSize) + mineGrid->contentsMargins().left() + mineGrid->contentsMargins().right() + 20;
+    int windowHeight = (BOARD_N * Cell::cellSize) + mineGrid->contentsMargins().bottom() + mineGrid->contentsMargins().top() + 100;
 
     window->setFixedSize(windowWidth, windowHeight);
+    window->setLayout(mainLayout);
+
     window->show();
     return QApplication::exec();
 }
